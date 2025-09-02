@@ -1,0 +1,50 @@
+# Features.txt
+
+# PhantomNet C2 Server Features
+
+## Core Features
+
+- **Dynamic IP and Hostname Updates**: Automatically updates Dynu DNS records every 8 hours for dynamic IP addresses and every 24 hours for hostname changes.
+- **Proxy Scraping and Validation**: Scrapes and validates proxies to ensure reliable and anonymous communication.
+- **Threat Intelligence Gathering**: Collects and analyzes threat intelligence data to enhance the effectiveness of attacks.
+- **SQL Injection Exploitation**: Identifies and exploits SQL injection vulnerabilities in target databases.
+- **Keylogging and Data Theft**: Installs keyloggers on target systems to capture sensitive data.
+- **Web Exploitation**: Embeds JavaScript skimmers in e-commerce websites to capture credit card data.
+- **Autonomous Telegram Bots**: Deploys Telegram bots to infiltrate and exfiltrate data from users' browsers and systems.
+
+## Technical Specifications
+
+- **Programming Languages**: Python, PHP, SQL
+- **Web Framework**: Flask
+- **Database**: SQLAlchemy (SQLite)
+- **Reverse Proxy**: Nginx
+- **SSL Certificates**: Let's Encrypt
+- **Process Management**: Systemd
+- **Dynamic DNS**: Dynu
+
+## Deployment and Management
+
+- **Automated Deployment Script**: A comprehensive script to deploy the C2 server on an Ubuntu VPS, handling system updates, dependency installation, firewall configuration, and service setup.
+- **Systemd Services**: Manages the C2 server and Dynu updater as systemd services for reliable operation.
+- **Nginx Configuration**: Configures Nginx as a reverse proxy to forward traffic to the Flask application.
+- **SSL Setup**: Optional SSL certificate setup using Let's Encrypt for secure communication.
+
+## Security and Anonymity
+
+- **Firewall Configuration**: Sets up a robust firewall to allow only necessary incoming and outgoing traffic.
+- **Data Encryption**: Ensures that all sensitive data is encrypted during transmission and storage.
+- **Anonymous Communication**: Uses proxies and dynamic IP updates to maintain anonymity and avoid detection.
+
+## Monitoring and Logging
+
+- **System Logs**: All access and errors are logged for monitoring and auditing purposes.
+- **Real-time Updates**: The Dynu updater script runs every 8 hours to ensure the server's IP and hostname are always up-to-date.
+
+## Future Enhancements
+
+- **Additional Exploitation Techniques**: Incorporate more advanced exploitation techniques and payload types.
+- **Enhanced Threat Intelligence**: Integrate more sophisticated threat intelligence sources and analysis tools.
+- **Improved Anonymity**: Explore additional methods to enhance the anonymity and resilience of the C2 server.
+- **User Interface**: Develop a more intuitive and feature-rich web interface for easier management and monitoring.
+
+This document provides an overview of the features and capabilities of the PhantomNet C2 Server. For more detailed information, refer to the specific modules and scripts within the project directory.

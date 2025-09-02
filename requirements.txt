@@ -1,0 +1,11 @@
+# requirements.txt
+
+Flask==2.3.2
+Flask-SQLAlchemy==3.0.3
+requests==2.31.0
+qrcode[pil]==7.4.2
+psutil==5.9.4
+pycryptodome==3.18.0
+certbot==2.5.0
+certbot-nginx==2.5.0
+gunicorn==20.1.0

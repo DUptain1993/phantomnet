@@ -1,0 +1,8 @@
+# dynu_config.json
+
+{
+    "domain": "your-dynu-domain.com",
+    "token": "your-dynu-token",
+    "last_update": "never",
+    "is_active": true
+}
