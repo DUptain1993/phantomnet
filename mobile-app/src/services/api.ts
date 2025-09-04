@@ -3,9 +3,9 @@ import * as SecureStore from 'expo-secure-store';
 import { Alert } from 'react-native';
 
 // API Configuration
-const API_BASE_URL = __DEV__ 
-  ? 'http://10.0.2.2:8443'  // Android emulator localhost
-  : 'https://your-production-domain.com'; // Production URL
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL ??
+  (__DEV__ ? 'https://10.0.2.2:8443' : 'https://your-production-domain.com');
 
 // Create axios instance
 export const api: AxiosInstance = axios.create({
@@ -91,87 +91,20 @@ api.interceptors.response.use(
 
 // API endpoints
 export const endpoints = {
-  // Authentication
   auth: {
-    login: '/admin/login',
-    logout: '/admin/logout',
-    refresh: '/auth/refresh',
-    me: '/auth/me',
-    profile: '/auth/profile',
+    login: '/admin/api/auth/login',      // POST { username, password }
+    logout: '/admin/api/auth/logout',    // POST
+    refresh: '/admin/api/auth/refresh',  // POST { refresh_token }
+    me: '/admin/api/auth/me',            // GET
   },
-  
-  // Bots
-  bots: {
-    list: '/api/bots',
-    create: '/api/bots',
-    get: (id: string) => `/api/bots/${id}`,
-    update: (id: string) => `/api/bots/${id}`,
-    delete: (id: string) => `/api/bots/${id}`,
-    status: (id: string) => `/api/bots/${id}/status`,
-    commands: (id: string) => `/api/bots/${id}/commands`,
-  },
-  
-  // Targets
-  targets: {
-    list: '/api/targets',
-    create: '/api/targets',
-    get: (id: string) => `/api/targets/${id}`,
-    update: (id: string) => `/api/targets/${id}`,
-    delete: (id: string) => `/api/targets/${id}`,
-    scan: (id: string) => `/api/targets/${id}/scan`,
-    exploit: (id: string) => `/api/targets/${id}/exploit`,
-  },
-  
-  // Commands
-  commands: {
-    list: '/api/commands',
-    create: '/api/commands',
-    get: (id: string) => `/api/commands/${id}`,
-    update: (id: string) => `/api/commands/${id}`,
-    delete: (id: string) => `/api/commands/${id}`,
-    execute: (id: string) => `/api/commands/${id}/execute`,
-    results: (id: string) => `/api/commands/${id}/results`,
-  },
-  
-  // Tasks
-  tasks: {
-    list: '/api/tasks',
-    create: '/api/tasks',
-    get: (id: string) => `/api/tasks/${id}`,
-    update: (id: string) => `/api/tasks/${id}`,
-    delete: (id: string) => `/api/tasks/${id}`,
-    start: (id: string) => `/api/tasks/${id}/start`,
-    stop: (id: string) => `/api/tasks/${id}/stop`,
-    status: (id: string) => `/api/tasks/${id}/status`,
-  },
-  
-  // Payloads
-  payloads: {
-    list: '/api/payloads',
-    create: '/api/payloads',
-    get: (id: string) => `/api/payloads/${id}`,
-    update: (id: string) => `/api/payloads/${id}`,
-    delete: (id: string) => `/api/payloads/${id}`,
-    generate: (id: string) => `/api/payloads/${id}/generate`,
-    download: (id: string) => `/api/payloads/${id}/download`,
-  },
-  
-  // Dashboard
-  dashboard: {
-    stats: '/api/dashboard/stats',
-    recent: '/api/dashboard/recent',
-    alerts: '/api/dashboard/alerts',
-    logs: '/api/dashboard/logs',
-  },
-  
-  // System
-  system: {
-    health: '/health',
-    status: '/api/system/status',
-    logs: '/api/system/logs',
-    config: '/api/system/config',
-    update: '/api/system/update',
-  },
+
+  bots:    { list: '/admin/api/bots',              get: (id: string) => `/admin/api/bots/${id}`,              /* … */ },
+  targets: { list: '/admin/api/targets',           get: (id: string) => `/admin/api/targets/${id}`,           /* … */ },
+  commands:{ list: '/admin/api/commands',          get: (id: string) => `/admin/api/commands/${id}`,          /* … */ },
+  tasks:   { list: '/admin/api/tasks',             get: (id: string) => `/admin/api/tasks/${id}`,             /* … */ },
+  payloads:{ list: '/admin/api/payloads',          get: (id: string) => `/admin/api/payloads/${id}`,          /* … */ },
+  dash:    { stats: '/admin/api/dashboard/stats',  recent: '/admin/api/dashboard/recent' },
+  system:  { health: '/health' },
 };
 
 // API service functions

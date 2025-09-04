@@ -1,26 +1,26 @@
 # app/__init__.py
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from app.config import Config
+from .extensions import db
+from .models import *                 # noqa: F401,F403
+from .routes.admin import admin_bp
+from .routes.bot   import bot_bp
 
-db = SQLAlchemy()
-migrate = Migrate()
 
-def create_app():
+def create_app() -> Flask:
+    """Factory for the PhantomNet C2 Flask application."""
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.update(
+        SECRET_KEY="change-me-in-production",
+        SQLALCHEMY_DATABASE_URI="sqlite:///phantom_c2.db",
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
+    )
 
     db.init_app(app)
-    migrate.init_app(app, db)
+    app.register_blueprint(admin_bp, url_prefix="/admin")
+    app.register_blueprint(bot_bp,   url_prefix="/bot")
 
-    # Import models to register them with SQLAlchemy
-    # Models will be imported when needed to avoid circular imports
-
-    from app.routes import admin, api, web
-    app.register_blueprint(admin.bp)
-    app.register_blueprint(api.bp)
-    app.register_blueprint(web.bp)
+    with app.app_context():
+        db.create_all()
 
     return app
